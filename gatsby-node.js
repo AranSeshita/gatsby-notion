@@ -1,34 +1,34 @@
-/**
- * Implement Gatsby's Node APIs in this file.
- *
- * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-node/
- */
-
 const path = require(`path`)
 const { createFilePath } = require(`gatsby-source-filesystem`)
 
-// Define the template for blog post
-const blogPost = path.resolve(`./src/templates/blog-post.js`)
-
-/**
- * @type {import('gatsby').GatsbyNode['createPages']}
- */
 exports.createPages = async ({ graphql, actions, reporter }) => {
   const { createPage } = actions
 
+  // Define a template for blog post
+  const blogPost = path.resolve(`./src/templates/blog-post.js`)
+
   // Get all markdown blog posts sorted by date
-  const result = await graphql(`
+  const result = await graphql(
+    `
     {
-      allMarkdownRemark(sort: { frontmatter: { date: ASC } }, limit: 1000) {
+      allMarkdownRemark(
+        filter: {frontmatter: {Published: {eq: true}}}
+        sort: {fields: frontmatter___CreatedAt, order: DESC}
+      ) {
         nodes {
           id
-          fields {
-            slug
+          frontmatter {
+            title
+            Published
+            Slug
+            CreatedAt(formatString: "YYYY/MM/DD")
+            UpdatedAt(formatString: "YYYY/MM/DD")
           }
         }
       }
     }
-  `)
+    `
+  )
 
   if (result.errors) {
     reporter.panicOnBuild(
@@ -49,8 +49,10 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
       const previousPostId = index === 0 ? null : posts[index - 1].id
       const nextPostId = index === posts.length - 1 ? null : posts[index + 1].id
 
+      const path = `/blog/${post.frontmatter.Slug}`;
+
       createPage({
-        path: post.fields.slug,
+        path: path,
         component: blogPost,
         context: {
           id: post.id,
@@ -62,26 +64,6 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
   }
 }
 
-/**
- * @type {import('gatsby').GatsbyNode['onCreateNode']}
- */
-exports.onCreateNode = ({ node, actions, getNode }) => {
-  const { createNodeField } = actions
-
-  if (node.internal.type === `MarkdownRemark`) {
-    const value = createFilePath({ node, getNode })
-
-    createNodeField({
-      name: `slug`,
-      node,
-      value,
-    })
-  }
-}
-
-/**
- * @type {import('gatsby').GatsbyNode['createSchemaCustomization']}
- */
 exports.createSchemaCustomization = ({ actions }) => {
   const { createTypes } = actions
 
@@ -109,17 +91,12 @@ exports.createSchemaCustomization = ({ actions }) => {
 
     type MarkdownRemark implements Node {
       frontmatter: Frontmatter
-      fields: Fields
     }
 
     type Frontmatter {
       title: String
       description: String
       date: Date @dateformat
-    }
-
-    type Fields {
-      slug: String
     }
   `)
 }

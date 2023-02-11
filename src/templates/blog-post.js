@@ -5,31 +5,37 @@ import Bio from "../components/bio"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 
-const BlogPostTemplate = ({
-  data: { previous, next, site, markdownRemark: post },
-  location,
-}) => {
-  const siteTitle = site.siteMetadata?.title || `Title`
+const BlogPostTemplate = ({ data, location }) => {
+  const post = data.markdownRemark
+  const siteTitle = data.site.siteMetadata?.title || `Title`
+  const { previous, next } = data
 
   return (
     <Layout location={location} title={siteTitle}>
+      <Seo
+        title={post.frontmatter.title}
+        description={post.excerpt}
+      />
       <article
         className="blog-post"
         itemScope
         itemType="http://schema.org/Article"
       >
         <header>
-          <h1 itemProp="headline">{post.frontmatter.title}</h1>
-          <p>{post.frontmatter.date}</p>
+          <div className="post-header-wrap">
+            <div className="post-icon">{post.frontmatter.Icon}</div>
+            <h1 itemProp="headline"> {post.frontmatter.title}</h1>
+            <p className="post-created-at">🕣 {post.frontmatter.CreatedAt.replaceAll('/', '.')}</p>
+          </div>
         </header>
-        <section
-          dangerouslySetInnerHTML={{ __html: post.html }}
-          itemProp="articleBody"
-        />
+        <div className="content-wrapper">
+          <section
+            dangerouslySetInnerHTML={{ __html: post.html }}
+            itemProp="articleBody"
+          />
+        </div>
         <hr />
-        <footer>
-          <Bio />
-        </footer>
+        <Bio />
       </article>
       <nav className="blog-post-nav">
         <ul
@@ -43,14 +49,14 @@ const BlogPostTemplate = ({
         >
           <li>
             {previous && (
-              <Link to={previous.fields.slug} rel="prev">
+              <Link to={`/blog/${previous.frontmatter.Slug}`} rel="prev">
                 ← {previous.frontmatter.title}
               </Link>
             )}
           </li>
           <li>
             {next && (
-              <Link to={next.fields.slug} rel="next">
+              <Link to={`/blog/${next.frontmatter.Slug}`} rel="next">
                 {next.frontmatter.title} →
               </Link>
             )}
@@ -58,15 +64,6 @@ const BlogPostTemplate = ({
         </ul>
       </nav>
     </Layout>
-  )
-}
-
-export const Head = ({ data: { markdownRemark: post } }) => {
-  return (
-    <Seo
-      title={post.frontmatter.title}
-      description={post.frontmatter.description || post.excerpt}
-    />
   )
 }
 
@@ -83,30 +80,27 @@ export const pageQuery = graphql`
         title
       }
     }
-    markdownRemark(id: { eq: $id }) {
+    markdownRemark(id: {eq: $id}) {
       id
-      excerpt(pruneLength: 160)
       html
+      excerpt
       frontmatter {
         title
-        date(formatString: "MMMM DD, YYYY")
-        description
+        Slug
+        CreatedAt(formatString: "YYYY/MM/DD")
+        UpdatedAt(formatString: "YYYY/MM/DD")
       }
     }
     previous: markdownRemark(id: { eq: $previousPostId }) {
-      fields {
-        slug
-      }
       frontmatter {
         title
+        Slug
       }
     }
     next: markdownRemark(id: { eq: $nextPostId }) {
-      fields {
-        slug
-      }
       frontmatter {
         title
+        Slug
       }
     }
   }

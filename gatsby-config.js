@@ -121,5 +121,17 @@ module.exports = {
         icon: `src/images/gatsby-icon.png`, // This path is relative to the root of the site.
       },
     },
+    {
+      resolve: `gatsby-source-notion-api`,
+      options: {
+        token: process.env.NOTION_TOKEN,
+        databaseId: process.env.NOTION_DBID,
+        propsToFrontmatter: true,
+        lowerTitleLevel: true,
+      },
+    },
   ],
 }
+require("dotenv").config({
+  path: `.env.${process.env.NODE_ENV}`
+})
