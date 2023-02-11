@@ -5,7 +5,7 @@ import Bio from "../components/bio"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 
-const BlogPostTemplate = ({ data, location }) => {
+const NewsPostTemplate = ({ data, location }) => {
   const post = data.markdownRemark
   const siteTitle = data.site.siteMetadata?.title || `Title`
   const { previous, next } = data
@@ -49,14 +49,14 @@ const BlogPostTemplate = ({ data, location }) => {
         >
           <li>
             {previous && (
-              <Link to={`/blog/${previous.frontmatter.Slug}`} rel="prev">
+              <Link to={`/news/${previous.frontmatter.Slug}`} rel="prev">
                 ← {previous.frontmatter.title}
               </Link>
             )}
           </li>
           <li>
             {next && (
-              <Link to={`/blog/${next.frontmatter.Slug}`} rel="next">
+              <Link to={`/news/${next.frontmatter.Slug}`} rel="next">
                 {next.frontmatter.title} →
               </Link>
             )}
@@ -67,7 +67,7 @@ const BlogPostTemplate = ({ data, location }) => {
   )
 }
 
-export default BlogPostTemplate
+export default NewsPostTemplate
 
 export const pageQuery = graphql`
   query BlogPostBySlug(

@@ -6,8 +6,9 @@ import Layout from "../components/layout"
 import Seo from "../components/seo"
 
 import ListItem from "../components/list/item"
+import Form from "../components/Form"
 
-const BlogIndex = ({ data, location }) => {
+const Index = ({ data, location }) => {
   const siteTitle = data.site.siteMetadata?.title || `Title`
   const posts = data.allMarkdownRemark.nodes
 
@@ -23,11 +24,11 @@ const BlogIndex = ({ data, location }) => {
 
   return (
     <Layout location={location} title={siteTitle}>
-      <Seo title="All posts" />
+      <Seo title="All news" />
       <ol style={{ listStyle: `none` }} className="index-list-container">
         {posts.map(post => {
           const title = post.frontmatter.title || post.frontmatter.Slug
-          const link = `/blog/${post.frontmatter.Slug}`;
+          const link = `/news/${post.frontmatter.Slug}`;
 
           return (
             <li key={post.frontmatter.Slug}>
@@ -43,11 +44,12 @@ const BlogIndex = ({ data, location }) => {
         })}
       </ol>
       <Bio />
+      <Form />;
     </Layout>
   )
 }
 
-export default BlogIndex
+export default Index
 
 export const pageQuery = graphql`
   query {

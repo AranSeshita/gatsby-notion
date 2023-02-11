@@ -49,7 +49,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
       const previousPostId = index === 0 ? null : posts[index - 1].id
       const nextPostId = index === posts.length - 1 ? null : posts[index + 1].id
 
-      const path = `/blog/${post.frontmatter.Slug}`;
+      const path = `/news/${post.frontmatter.Slug}`;
 
       createPage({
         path: path,
