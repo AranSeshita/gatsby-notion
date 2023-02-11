@@ -70,4 +70,4 @@ yarn-error.log
 # Ignore env file
 .env*
 # Keep content folder
-!/content/blog.gitkeep
+!/content/blog .gitkeep
